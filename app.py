@@ -7,7 +7,10 @@ CORS(app)
 
 # Load data from the JSON file
 with open('q-vercel-python.json') as f:
-    students = json.load(f)
+    student_data = json.load(f)
+
+# Create a dictionary with names as keys and marks as values
+students = {student["name"]: student["marks"] for student in student_data}
 
 @app.route('/api', methods=['GET'])
 def get_marks():
@@ -17,4 +20,3 @@ def get_marks():
 
 if __name__ == '__main__':
     app.run(debug=True)
-

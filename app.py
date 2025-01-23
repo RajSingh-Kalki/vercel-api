@@ -1,17 +1,13 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import json
 
 app = Flask(__name__)
 CORS(app)
 
-# Sample data of 100 imaginary students
-students = {
-    "John": 10,
-    "Jane": 20,
-    "Alice": 30,
-    "Bob": 40,
-    # Add more students' marks as needed
-}
+# Load data from the JSON file
+with open('q-vercel-python.json') as f:
+    students = json.load(f)
 
 @app.route('/api', methods=['GET'])
 def get_marks():
@@ -21,3 +17,4 @@ def get_marks():
 
 if __name__ == '__main__':
     app.run(debug=True)
+

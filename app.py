@@ -1,22 +1,32 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import json
 
-app = Flask(__name__)
-CORS(app)
+app = FastAPI()
 
-# Load data from the JSON file
-with open('q-vercel-python.json') as f:
-    student_data = json.load(f)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
-# Create a dictionary with names as keys and marks as values
-students = {student["name"]: student["marks"] for student in student_data}
+# Load the student marks data
+with open("q-vercel-python.json") as f:
+    student_marks = {student["name"]: student["marks"] for student in json.load(f)}
 
-@app.route('/api', methods=['GET'])
-def get_marks():
-    names = request.args.getlist('name')
-    marks = [students.get(name, None) for name in names]
-    return jsonify({"marks": marks})
+@app.get("/api")
+def get_marks(name: str):
+    names = name.split(",")
+    marks = []
+    for n in names:
+        if n in student_marks:
+            marks.append(student_marks[n])
+        else:
+            raise HTTPException(status_code=404, detail=f"Student {n} not found")
+    return {"marks": marks}
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

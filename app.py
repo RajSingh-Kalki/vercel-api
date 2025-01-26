@@ -27,6 +27,7 @@ def get_marks():
         return jsonify({"marks": marks})
     except Exception as e:
         app.logger.error(f"Error in /api endpoint: {e}")
+        app.logger.exception(e)  # Add detailed exception logging
         return jsonify({"error": "Internal Server Error"}), 500
 
 if __name__ == "__main__":

@@ -5,10 +5,15 @@ import json
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-# Load marks data from q-vercel-python.json
-with open('q-vercel-python.json') as f:
-    students_data = json.load(f)
-    students_marks = {student['name']: student['marks'] for student in students_data}
+# Load marks data from q-vercel-python.json with error handling
+try:
+    with open('q-vercel-python.json') as f:
+        students_data = json.load(f)
+        students_marks = {student['name']: student['marks'] for student in students_data}
+except Exception as e:
+    students_data = []
+    students_marks = {}
+    print(f"Error loading JSON file: {e}")
 
 @app.route('/api', methods=['GET'])
 def get_marks():

@@ -1,32 +1,19 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)
+
+# Load marks data from q-vercel-python.json
 import json
+with open('q-vercel-python.json') as f:
+    students_marks = json.load(f)
 
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
-    allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
-)
-
-# Load the student marks data
-with open("q-vercel-python.json") as f:
-    student_marks = {student["name"]: student["marks"] for student in json.load(f)}
-
-@app.get("/api")
-def get_marks(name: str):
-    names = name.split(",")
-    marks = []
-    for n in names:
-        if n in student_marks:
-            marks.append(student_marks[n])
-        else:
-            raise HTTPException(status_code=404, detail=f"Student {n} not found")
-    return {"marks": marks}
+@app.route('/api', methods=['GET'])
+def get_marks():
+    names = request.args.getlist('name')
+    marks = [students_marks.get(name, 0) for name in names]
+    return jsonify({"marks": marks})
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    app.run()

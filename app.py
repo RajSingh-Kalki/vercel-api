@@ -3,7 +3,7 @@ from flask_cors import CORS
 import json
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}})  # Allow all origins for /api/*
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Load marks data from q-vercel-python.json
 with open('q-vercel-python.json') as f:
